@@ -1,0 +1,58 @@
+name: build
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    if: "!github.event.release.prerelease"
+    name: Building on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+         - os: ubuntu-latest
+           zssh_artifact_name: zssh
+           zssh_asset_name: zssh-linux-amd64
+           zscp_artifact_name: zftp
+           zscp_asset_name: zftp-linux-amd64
+         - os: windows-latest
+           zssh_artifact_name: zssh.exe
+           zssh_asset_name: zssh-windows-amd64.exe
+           zscp_artifact_name: zftp.exe
+           zscp_asset_name: zftp-windows-amd64.exe
+         - os: macos-latest
+           zssh_artifact_name: zssh
+           zssh_asset_name: zssh-macos-amd64
+           zscp_artifact_name: zftp
+           zscp_asset_name: zftp-macos-amd64
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.16
+
+    - name: Make the build dir
+      run: mkdir "${{ runner.workspace }}/build"
+      
+    - name: Build
+      run: go build -o ${{ runner.workspace }}/build ./...
+
+    - name: Upload zssh binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ runner.workspace }}/build/${{ matrix.zssh_artifact_name }}
+        asset_name: ${{ matrix.zssh_asset_name }}
+        tag: ${{ github.ref }}
+
+    - name: Upload zftp binaries to release
+      uses: svenstaro/upload-release-action@v2
+      with:
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        file: ${{ runner.workspace }}/build/${{ matrix.zscp_artifact_name }}
+        asset_name: ${{ matrix.zscp_asset_name }}
+        tag: ${{ github.ref }}
