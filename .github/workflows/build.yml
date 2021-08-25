@@ -13,20 +13,14 @@ jobs:
       matrix:
         include:
          - os: ubuntu-latest
-           zssh_artifact_name: zssh
-           zssh_asset_name: zssh-linux-amd64
-           zscp_artifact_name: zftp
-           zscp_asset_name: zftp-linux-amd64
+           zftp_artifact_name: zftp
+           zftp_asset_name: zftp-linux-amd64
          - os: windows-latest
-           zssh_artifact_name: zssh.exe
-           zssh_asset_name: zssh-windows-amd64.exe
-           zscp_artifact_name: zftp.exe
-           zscp_asset_name: zftp-windows-amd64.exe
+           zftp_artifact_name: zftp.exe
+           zftp_asset_name: zftp-windows-amd64.exe
          - os: macos-latest
-           zssh_artifact_name: zssh
-           zssh_asset_name: zssh-macos-amd64
-           zscp_artifact_name: zftp
-           zscp_asset_name: zftp-macos-amd64
+           zftp_artifact_name: zftp
+           zftp_asset_name: zftp-macos-amd64
     steps:
     - uses: actions/checkout@v2
 
@@ -41,18 +35,10 @@ jobs:
     - name: Build
       run: go build -o ${{ runner.workspace }}/build ./...
 
-    - name: Upload zssh binaries to release
-      uses: svenstaro/upload-release-action@v2
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ runner.workspace }}/build/${{ matrix.zssh_artifact_name }}
-        asset_name: ${{ matrix.zssh_asset_name }}
-        tag: ${{ github.ref }}
-
     - name: Upload zftp binaries to release
       uses: svenstaro/upload-release-action@v2
       with:
         repo_token: ${{ secrets.GITHUB_TOKEN }}
-        file: ${{ runner.workspace }}/build/${{ matrix.zscp_artifact_name }}
+        file: ${{ runner.workspace }}/build/${{ matrix.zftp_artifact_name }}
         asset_name: ${{ matrix.zscp_asset_name }}
         tag: ${{ github.ref }}
