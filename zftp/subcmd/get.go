@@ -4,7 +4,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 	"os"
-	"path/filepath"
 	"zssh/zftplib"
 )
 
@@ -20,15 +19,6 @@ var getCmd = &cobra.Command{
 
 		localFilePath = args[1]
 		remoteFilePath = args[0]
-
-		localFilePath, err = filepath.Abs(localFilePath)
-		if err != nil {
-			logrus.Fatalf("cannot determine absolute local file path, unrecognized file name: %s", localFilePath)
-		}
-		if _, err := os.Stat(localFilePath); err != nil {
-			logrus.Fatal(err)
-		}
-		flags.DebugLog("           local path: %s", localFilePath)
 
 		username, targetIdentity := flags.GetUserAndIdentity(remoteFilePath)
 		remoteFilePath = zftplib.ParseFilePath(remoteFilePath)
